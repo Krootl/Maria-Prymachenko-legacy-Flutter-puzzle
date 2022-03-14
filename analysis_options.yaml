@@ -1,0 +1,23 @@
+analyzer:
+  strong-mode:
+    implicit-casts: true
+    implicit-dynamic: true
+
+  exclude:
+    - "bin/cache/**"
+    - "lib/i18n/stock_messages_*.dart"
+    - "lib/src/http/**"
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.config.dart"
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - always_use_package_imports
+    - always_declare_return_types
+    - join_return_with_assignment
+    - prefer_expression_function_bodies

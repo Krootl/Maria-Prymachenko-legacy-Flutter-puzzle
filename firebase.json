@@ -1,0 +1,9 @@
+{
+  "hosting": {
+    "public": "build/web",
+    "site": "maria-primachenko-15-puzzle",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "ignore": [".firebase", "firebase.json", "__/**"]
+  }
+}

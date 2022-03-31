@@ -10,7 +10,6 @@ import 'package:very_good_slide_puzzle/presentation/blocs/theme_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/blocs/timer_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/enums/puzzle_lifecycle.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_colors.dart';
-import 'package:very_good_slide_puzzle/presentation/resources/app_icons.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_text_styles.dart';
 import 'package:very_good_slide_puzzle/presentation/themes/puzzle/theme.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/congratulations_dialog.dart';

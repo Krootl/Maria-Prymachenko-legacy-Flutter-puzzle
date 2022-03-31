@@ -46,7 +46,6 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
   /// The controller that drives [_scale] animation.
   late AnimationController _controller;
   late Animation<double> _scale;
-  final GlobalKey _key = GlobalKey();
   late FractionalOffset offset;
   late double _dragPower;
   late int size = widget.puzzleState.puzzle.getDimension();
@@ -106,12 +105,10 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
 
     return GestureDetector(
       onHorizontalDragUpdate: (e) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y ==
-            widget.tile.currentPosition.y) {
+        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y == widget.tile.currentPosition.y) {
           if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
             final dragPower =
-                ((getLocalPosition(e.localPosition.dx, _getDx(size: size)) - _getDx(size: size)) /
-                    _tileLimit);
+                ((getLocalPosition(e.localPosition.dx, _getDx(size: size)) - _getDx(size: size)) / _tileLimit);
 
             setState(() {
               _dragPower = dragPower;
@@ -130,13 +127,10 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
         }
       },
       onVerticalDragUpdate: (e) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x ==
-            widget.tile.currentPosition.x) {
+        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x == widget.tile.currentPosition.x) {
           if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
             final double dragPower =
-                (getLocalPosition(e.localPosition.dy, _getDy(size: size)) * 1.25 -
-                        _getDy(size: size)) /
-                    _tileLimit;
+                (getLocalPosition(e.localPosition.dy, _getDy(size: size)) * 1.25 - _getDy(size: size)) / _tileLimit;
 
             setState(() {
               _dragPower = dragPower;
@@ -155,8 +149,7 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
         }
       },
       onHorizontalDragEnd: (details) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y ==
-            widget.tile.currentPosition.y) {
+        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y == widget.tile.currentPosition.y) {
           if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
             setState(() {
               _dragPower = _dragPower.round().toDouble();
@@ -175,8 +168,7 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
         }
       },
       onVerticalDragEnd: (e) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x ==
-            widget.tile.currentPosition.x) {
+        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x == widget.tile.currentPosition.x) {
           if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
             setState(() {
               _dragPower = _dragPower.round().toDouble();
@@ -246,9 +238,7 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
                           scale: _scale,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(
-                                widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onCreate
-                                    ? 0
-                                    : 4),
+                                widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onCreate ? 0 : 4),
                             child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
                               child: widget.hasArt
@@ -345,6 +335,5 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
     return true;
   }
 
-  bool get _showTileNumber =>
-      !widget.showTileNumber && widget.puzzleState.puzzleLifecycle != PuzzleLifecycle.onCreate;
+  bool get _showTileNumber => !widget.showTileNumber && widget.puzzleState.puzzleLifecycle != PuzzleLifecycle.onCreate;
 }

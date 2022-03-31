@@ -283,9 +283,8 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
       }
 
       return output;
-    } on Exception catch (e) {
-      print(e);
-    }
+    } on Exception catch (_) {}
+    return null;
   }
 
   Puzzle _shufflePuzzle({required Puzzle generatePuzzle}) {

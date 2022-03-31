@@ -18,8 +18,6 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  late final _scrollController = ScrollController(initialScrollOffset: -MediaQuery.of(context).size.height);
-
   @override
   void initState() {
     super.initState();

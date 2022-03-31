@@ -10,8 +10,8 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     on<InitHomePage>(_onInitHomePage);
     on<GetPaintings>(_onGetPaintings);
   }
-  var _paintings = <PaintingEntity>[];
-  var _hasMore = false;
+
+  final _paintings = <PaintingEntity>[];
   String? paginationTokken;
 
   Future<void> _onInitHomePage(HomePageEvent event, Emitter<HomePageState> emit) async {

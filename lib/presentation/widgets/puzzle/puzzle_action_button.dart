@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:very_good_slide_puzzle/presentation/blocs/puzzle_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/blocs/theme_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/enums/puzzle_lifecycle.dart';
@@ -25,13 +23,11 @@ class _PuzzleActionButtonState extends State<PuzzleActionButton> {
   Widget build(BuildContext context) {
     final theme = BlocProvider.of<ThemeBloc>(context).state.currentPuzzleTheme;
     return ElevatedButton(
-      //TODO: implement style
       style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
           primary: widget._puzzleLifecycle.getActionButtonColor(theme: theme)),
-
       onPressed: () {
         if (widget._puzzleLifecycle == PuzzleLifecycle.onShuffle) return;
         if (widget._puzzleLifecycle == PuzzleLifecycle.onCreate) {
@@ -55,8 +51,7 @@ class _PuzzleActionButtonState extends State<PuzzleActionButton> {
             ],
             Text(
               widget._puzzleLifecycle.getActionButtonTitle(context),
-              style:
-                  TextStyle(color: widget._puzzleLifecycle.getActionButtonTitleColor(theme: theme)),
+              style: TextStyle(color: widget._puzzleLifecycle.getActionButtonTitleColor(theme: theme)),
             ),
           ],
         ),

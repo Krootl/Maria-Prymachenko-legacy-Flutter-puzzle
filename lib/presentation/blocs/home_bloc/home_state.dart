@@ -1,16 +1,16 @@
 import 'package:very_good_slide_puzzle/domain/entities/painting_entity.dart';
 
-abstract class HomePageState {
-  const HomePageState({
+abstract class HomeState {
+  const HomeState({
     this.paintings = const <PaintingEntity>[],
   });
 
   final List<PaintingEntity> paintings;
 }
 
-class InitialHomePageState extends HomePageState {}
+class InitialHomeState extends HomeState {}
 
-class GotPaintings extends HomePageState {
+class GotPaintings extends HomeState {
   const GotPaintings({
     required List<PaintingEntity> paintings,
   }) : super(
@@ -18,7 +18,7 @@ class GotPaintings extends HomePageState {
         );
 }
 
-class PaginationErrorState extends HomePageState {
+class PaginationErrorState extends HomeState {
   const PaginationErrorState({
     required List<PaintingEntity> paintings,
     required bool hasMore,
@@ -28,4 +28,4 @@ class PaginationErrorState extends HomePageState {
         );
 }
 
-class GotPaintingsErrorState extends HomePageState {}
+class GotPaintingsErrorState extends HomeState {}

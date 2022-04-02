@@ -11,12 +11,12 @@ import 'package:very_good_slide_puzzle/presentation/widgets/response_layout_buil
 
 abstract class _TileSize {
   static double extraSmall = 60;
-  static double small = 85;
+  static double small = 80;
   static double medium = 100;
   static double large = 112;
 }
 
-const _tileLimit = 0.3389830508474576;
+const _tileLimit = 0.33;
 
 class PuzzleTile extends StatefulWidget {
   const PuzzleTile({
@@ -29,7 +29,6 @@ class PuzzleTile extends StatefulWidget {
     required this.showTileNumber,
   }) : super(key: key);
 
-  /// The tile to be displayed.
   final Tile tile;
 
   final PuzzleState puzzleState;
@@ -51,6 +50,8 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
   late int size = widget.puzzleState.puzzle.getDimension();
   late double layout;
   late double tileSize;
+  late double k;
+  late double centerK;
 
   @override
   void initState() {
@@ -59,23 +60,27 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
       case LayoutSize.extraSmall:
         layout = BoardSize.extraSmall;
         tileSize = _TileSize.extraSmall;
+        k = 0.7;
+
         break;
       case LayoutSize.small:
         layout = BoardSize.small;
         tileSize = _TileSize.small;
+        k = 0.7;
         break;
       case LayoutSize.medium:
         layout = BoardSize.medium;
         tileSize = _TileSize.medium;
+        k = 0.75;
         break;
       case LayoutSize.large:
         layout = BoardSize.large;
         tileSize = _TileSize.large;
+        k = 0.4;
+
         break;
-      default:
-        layout = BoardSize.small;
-        tileSize = _TileSize.small;
     }
+    centerK = ((layout - tileSize * 4) * 0.01) / 3;
 
     _controller = AnimationController(
       vsync: this,
@@ -89,10 +94,6 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
       ),
     );
     size = widget.puzzleState.puzzle.getDimension();
-    offset = FractionalOffset(
-      _getDx(size: size),
-      _getDy(size: size),
-    );
     super.initState();
   }
 
@@ -101,182 +102,185 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
     final theme = BlocProvider.of<ThemeBloc>(context).state.currentPuzzleTheme;
     final canPress = widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onRunning &&
         widget.puzzleState.puzzleStatus == PuzzleStatus.incomplete;
-    getOffset();
+    _getOffset();
 
-    return GestureDetector(
-      onHorizontalDragUpdate: (e) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y == widget.tile.currentPosition.y) {
-          if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
-            final dragPower =
-                ((getLocalPosition(e.localPosition.dx, _getDx(size: size)) - _getDx(size: size)) / _tileLimit);
+    return IgnorePointer(
+      ignoring: !canPress,
+      child: GestureDetector(
+        onHorizontalDragUpdate: (e) {
+          if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y == widget.tile.currentPosition.y) {
+            if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
+              final dragPower =
+                  ((getLocalPosition(e.localPosition.dx, _getDx(size: size)) - _getDx(size: size)) / _tileLimit);
+              setState(() {
+                _dragPower = dragPower;
+              });
 
-            setState(() {
-              _dragPower = dragPower;
-            });
-
-            BlocProvider.of<PuzzleBloc>(context).add(
-              DragTile(
-                tile: widget.tile,
-                isDrag: true,
-                dragTiles: widget.puzzleState.draggablePuzzles.tiles,
-                dragPower: _dragPower,
-                isHorizontal: true,
-              ),
-            );
-          }
-        }
-      },
-      onVerticalDragUpdate: (e) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x == widget.tile.currentPosition.x) {
-          if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
-            final double dragPower =
-                (getLocalPosition(e.localPosition.dy, _getDy(size: size)) * 1.25 - _getDy(size: size)) / _tileLimit;
-
-            setState(() {
-              _dragPower = dragPower;
-            });
-
-            BlocProvider.of<PuzzleBloc>(context).add(
-              DragTile(
-                tile: widget.tile,
-                isDrag: true,
-                dragTiles: widget.puzzleState.draggablePuzzles.tiles,
-                dragPower: _dragPower,
-                isHorizontal: false,
-              ),
-            );
-          }
-        }
-      },
-      onHorizontalDragEnd: (details) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y == widget.tile.currentPosition.y) {
-          if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
-            setState(() {
-              _dragPower = _dragPower.round().toDouble();
-            });
-
-            BlocProvider.of<PuzzleBloc>(context).add(
-              DragTile(
-                tile: widget.tile,
-                isDrag: false,
-                dragTiles: widget.puzzleState.puzzle.tiles,
-                dragPower: _dragPower,
-                isHorizontal: true,
-              ),
-            );
-          }
-        }
-      },
-      onVerticalDragEnd: (e) {
-        if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x == widget.tile.currentPosition.x) {
-          if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
-            setState(() {
-              _dragPower = _dragPower.round().toDouble();
-            });
-
-            BlocProvider.of<PuzzleBloc>(context).add(
-              DragTile(
-                tile: widget.tile,
-                isDrag: false,
-                dragTiles: widget.puzzleState.puzzle.tiles,
-                dragPower: _dragPower,
-                isHorizontal: false,
-              ),
-            );
-          }
-        }
-      },
-      onTap: canPress
-          ? () {
-              BlocProvider.of<PuzzleBloc>(context).add(TapTile(tile: widget.tile));
+              BlocProvider.of<PuzzleBloc>(context).add(
+                DragTile(
+                  tile: widget.tile,
+                  isDrag: true,
+                  dragTiles: widget.puzzleState.draggablePuzzles.tiles,
+                  dragPower: _dragPower,
+                  isHorizontal: true,
+                ),
+              );
             }
-          : null,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: _showTile
-            ? AnimatedAlign(
-                duration: Duration(milliseconds: widget.puzzleState.isDrag ? 100 : 300),
-                alignment: offset,
-                curve: Curves.easeInOut,
-                child: ResponsiveLayoutBuilder(
-                  extraSmall: (_, child) => SizedBox.square(
-                    key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
-                    dimension: _TileSize.extraSmall,
-                    child: child,
-                  ),
-                  small: (_, child) => SizedBox.square(
-                    key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
-                    dimension: _TileSize.small,
-                    child: child,
-                  ),
-                  medium: (_, child) => SizedBox.square(
-                    key: Key('dashatar_puzzle_tile_medium_${widget.tile.value}'),
-                    dimension: _TileSize.medium,
-                    child: child,
-                  ),
-                  large: (_, child) => SizedBox.square(
-                    key: Key('dashatar_puzzle_tile_large_${widget.tile.value}'),
-                    dimension: _TileSize.large,
-                    child: child,
-                  ),
-                  child: (tile) => MouseRegion(
-                    onEnter: (_) {
-                      if (canPress) {
-                        _controller.forward();
-                      }
-                    },
-                    onExit: (_) {
-                      if (canPress) {
-                        _controller.reverse();
-                      }
-                    },
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        ScaleTransition(
-                          key: Key('dashatar_puzzle_tile_scale_${widget.tile.value}'),
-                          scale: _scale,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onCreate ? 0 : 4),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              child: widget.hasArt
-                                  ? Image.memory(
-                                      widget.image.bytes,
-                                    )
-                                  : Container(
-                                      color: theme.defaultColor,
-                                    ),
+          }
+        },
+        onVerticalDragUpdate: (e) {
+          if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x == widget.tile.currentPosition.x) {
+            if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
+              final double dragPower =
+                  (getLocalPosition(e.localPosition.dy, _getDy(size: size)) * 1.25 - _getDy(size: size)) / _tileLimit;
+
+              setState(() {
+                _dragPower = dragPower;
+              });
+
+              BlocProvider.of<PuzzleBloc>(context).add(
+                DragTile(
+                  tile: widget.tile,
+                  isDrag: true,
+                  dragTiles: widget.puzzleState.draggablePuzzles.tiles,
+                  dragPower: _dragPower,
+                  isHorizontal: false,
+                ),
+              );
+            }
+          }
+        },
+        onHorizontalDragEnd: (details) {
+          if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.y == widget.tile.currentPosition.y) {
+            if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
+              setState(() {
+                _dragPower = _dragPower.round().toDouble();
+              });
+
+              BlocProvider.of<PuzzleBloc>(context).add(
+                DragTile(
+                  tile: widget.tile,
+                  isDrag: false,
+                  dragTiles: widget.puzzleState.puzzle.tiles,
+                  dragPower: _dragPower,
+                  isHorizontal: true,
+                ),
+              );
+            }
+          }
+        },
+        onVerticalDragEnd: (e) {
+          if (widget.puzzleState.puzzle.getWhitespaceTile().currentPosition.x == widget.tile.currentPosition.x) {
+            if (widget.puzzleState.puzzle.isTileMovable(widget.tile)) {
+              setState(() {
+                _dragPower = _dragPower.round().toDouble();
+              });
+
+              BlocProvider.of<PuzzleBloc>(context).add(
+                DragTile(
+                  tile: widget.tile,
+                  isDrag: false,
+                  dragTiles: widget.puzzleState.puzzle.tiles,
+                  dragPower: _dragPower,
+                  isHorizontal: false,
+                ),
+              );
+            }
+          }
+        },
+        onTap: canPress
+            ? () {
+                BlocProvider.of<PuzzleBloc>(context).add(TapTile(tile: widget.tile));
+              }
+            : null,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: _showTile
+              ? AnimatedAlign(
+                  duration: Duration(milliseconds: widget.puzzleState.isDrag ? 100 : 300),
+                  alignment: offset,
+                  curve: Curves.easeInOut,
+                  child: ResponsiveLayoutBuilder(
+                    extraSmall: (_, child) => SizedBox.square(
+                      key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
+                      dimension: _TileSize.extraSmall,
+                      child: child,
+                    ),
+                    small: (_, child) => SizedBox.square(
+                      key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
+                      dimension: _TileSize.small,
+                      child: child,
+                    ),
+                    medium: (_, child) => SizedBox.square(
+                      key: Key('dashatar_puzzle_tile_medium_${widget.tile.value}'),
+                      dimension: _TileSize.medium,
+                      child: child,
+                    ),
+                    large: (_, child) => SizedBox.square(
+                      key: Key('dashatar_puzzle_tile_large_${widget.tile.value}'),
+                      dimension: _TileSize.large,
+                      child: child,
+                    ),
+                    child: (tile) => MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      onEnter: (_) {
+                        if (canPress) {
+                          _controller.forward();
+                        }
+                      },
+                      onExit: (_) {
+                        if (canPress) {
+                          _controller.reverse();
+                        }
+                      },
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ScaleTransition(
+                            key: Key('dashatar_puzzle_tile_scale_${widget.tile.value}'),
+                            scale: _scale,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onCreate ? 0 : 4),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: widget.hasArt
+                                    ? Image.memory(
+                                        widget.image.bytes,
+                                      )
+                                    : Container(
+                                        color: theme.defaultColor,
+                                      ),
+                              ),
                             ),
                           ),
-                        ),
-                        Center(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            child: _showTileNumber
-                                ? Text(
-                                    widget.tile.value.toString(),
-                                    style: AppTextStyles.headline3.copyWith(
-                                      color: theme.tileNumberColor,
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
+                          Center(
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              child: _showTileNumber
+                                  ? Text(
+                                      widget.tile.value.toString(),
+                                      style: AppTextStyles.headline3.copyWith(
+                                        color: theme.tileNumberColor,
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              )
-            : const SizedBox.shrink(),
+                )
+              : const SizedBox.shrink(),
+        ),
       ),
     );
   }
 
   double _getDx({required int size, bool isDrag = false}) {
     if (widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onCreate) {
-      return (widget.tile.currentPosition.x - 0.9) / (size - 0.82);
+      return (widget.tile.currentPosition.x - 1) / (size - k) + centerK;
     }
     return (isDrag
             ? widget.puzzleState.draggablePuzzles.tiles
@@ -290,7 +294,7 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
 
   double _getDy({required int size, bool isDrag = false}) {
     if (widget.puzzleState.puzzleLifecycle == PuzzleLifecycle.onCreate) {
-      return (widget.tile.currentPosition.y - 1) / (size - 0.83);
+      return (widget.tile.currentPosition.y - 1) / (size - k);
     }
     return (isDrag
             ? widget.puzzleState.draggablePuzzles.tiles
@@ -302,7 +306,7 @@ class PuzzleTileState extends State<PuzzleTile> with SingleTickerProviderStateMi
         (size - 1.05);
   }
 
-  void getOffset() {
+  void _getOffset() {
     setState(() {
       offset = FractionalOffset(
         _getDx(size: size, isDrag: widget.puzzleState.isDrag),

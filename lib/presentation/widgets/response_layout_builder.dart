@@ -18,9 +18,6 @@ class ResponsiveLayoutBuilder extends StatelessWidget {
   final ResponsiveLayoutWidgetBuilder medium;
   final ResponsiveLayoutWidgetBuilder large;
 
-  /// Optional child widget builder based on the current layout size
-  /// which will be passed to the `small`, `medium` and `large` builders
-  /// as a way to share/optimize shared layout.
   final Widget Function(LayoutSize currentSize)? child;
 
   @override

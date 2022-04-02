@@ -5,18 +5,22 @@ class MenuState extends Equatable {
   const MenuState({
     this.menuId,
     this.isSelected = false,
+    this.isDisabled = false,
   });
 
   final MenuId? menuId;
   final bool isSelected;
+  final bool isDisabled;
 
   @override
   List<Object?> get props => [menuId, isSelected];
 }
 
 class TurnedOnArtMode extends MenuState {
-  const TurnedOnArtMode()
-      : super(
+  const TurnedOnArtMode({
+    bool isDisabled = false,
+  }) : super(
+          isDisabled: isDisabled,
           menuId: MenuId.artMode,
         );
 }
@@ -50,8 +54,10 @@ class TurnedOnExtremeMode extends MenuState {
 }
 
 class TurnedOnNeutralMode extends MenuState {
-  const TurnedOnNeutralMode()
-      : super(
+  const TurnedOnNeutralMode({
+    bool isDisabled = false,
+  }) : super(
+          isDisabled: isDisabled,
           menuId: MenuId.turnOnNeutralMode,
         );
 }

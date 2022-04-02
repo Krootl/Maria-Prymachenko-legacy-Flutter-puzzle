@@ -5,8 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:very_good_slide_puzzle/presentation/blocs/theme_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_text_styles.dart';
 
-class Timer extends StatelessWidget {
-  const Timer({
+class GameTimer extends StatelessWidget {
+  const GameTimer({
     Key? key,
     required int secondsElapsed,
   })  : _secondsElapsed = secondsElapsed,

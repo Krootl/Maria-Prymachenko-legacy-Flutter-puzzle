@@ -253,7 +253,8 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
     try {
       final file = await ImageUtils.getImageBytes(imagePath: imagePath);
       final image = imglib.decodeImage(file)!;
-      final size = min(image.width, image.height);
+      final size = 400;
+      // print(size);
       bool isHorizontal = image.width > image.height;
       int x = isHorizontal ? ((max(image.width, image.height) - size) / 2).round() : 0;
       int y = !isHorizontal ? ((max(image.width, image.height) - size) / 2).round() : 0;

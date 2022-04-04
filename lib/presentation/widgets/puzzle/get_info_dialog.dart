@@ -129,24 +129,28 @@ class GetInfoDialog extends StatelessWidget {
           ),
         ),
       );
+
   Widget _buildLearnMoreButton({required BuildContext context, required PuzzleTheme puzzleTheme}) => Align(
         alignment: Alignment.topLeft,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: puzzleTheme.learnMoreButtonColor,
-            elevation: 0,
-            shadowColor: Colors.transparent,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          height: 42,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: puzzleTheme.learnMoreButtonColor,
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          ),
-          onPressed: () {
-            launch('https://www.wikiart.org/en/maria-primachenko/$_url');
-          },
-          child: Text(
-            context.l10n.learnMorePuzzleArt,
-            style: AppTextStyles.body1.copyWith(color: puzzleTheme.learnMoreTitleColor),
+            onPressed: () {
+              launch('https://www.wikiart.org/en/maria-primachenko/$_url');
+            },
+            child: Text(
+              context.l10n.learnMorePuzzleArt,
+              style: AppTextStyles.body1.copyWith(color: puzzleTheme.learnMoreTitleColor),
+            ),
           ),
         ),
       );

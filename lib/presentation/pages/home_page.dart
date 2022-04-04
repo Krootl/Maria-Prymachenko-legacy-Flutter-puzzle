@@ -1,23 +1,41 @@
 import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:very_good_slide_puzzle/presentation/bloc/home/bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:very_good_slide_puzzle/presentation/blocs/home_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/pages/about_page.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_colors.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_text_styles.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/home_page/home_image_item.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:very_good_slide_puzzle/l10n/l10n.dart';
+import 'package:very_good_slide_puzzle/presentation/widgets/response_layout_builder.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _appBarElevated = ValueNotifier(false);
+  final _controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      _appBarElevated.value = _controller.position.pixels != _controller.position.minScrollExtent;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) => BlocProvider(
-        create: (context) => HomePageBloc()..add(InitHomePage()),
-        child: BlocListener<HomePageBloc, HomePageState>(
+        create: (context) => HomeBloc()..add(InitHome()),
+        child: BlocListener<HomeBloc, HomeState>(
           listener: (context, state) {
             if (state is PaginationErrorState) {
               showFlash<void>(
@@ -51,7 +69,7 @@ class HomePage extends StatelessWidget {
             backgroundColor: Colors.white,
             floatingActionButton: _buildAboutButton(context: context),
             floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-            body: BlocBuilder<HomePageBloc, HomePageState>(
+            body: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) => Column(
                 children: [
                   Material(
@@ -70,69 +88,81 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
                           Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 50),
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  text: context.l10n.chooseArtBy,
-                                  style: AppTextStyles.subtitle2.copyWith(
-                                    fontSize: 16,
-                                    color: AppColors.black,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: context.l10n.mariaPrymachenko,
-                                      style: AppTextStyles.subtitle1.copyWith(fontSize: 16),
-                                    ),
-                                    TextSpan(text: context.l10n.artPainter),
-                                  ],
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text: context.l10n.chooseArtBy,
+                                style: AppTextStyles.subtitle2.copyWith(
+                                  fontSize: 16,
+                                  color: AppColors.black,
                                 ),
-                              )),
+                                children: [
+                                  TextSpan(
+                                    text: context.l10n.mariaPrymachenko,
+                                    style: AppTextStyles.subtitle1.copyWith(fontSize: 16),
+                                  ),
+                                  TextSpan(text: context.l10n.artPainter),
+                                ],
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 24),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _appBarElevated,
+                            builder: (context, showDivider, _) => showDivider
+                                ? Divider(
+                                    height: 0,
+                                    color: Colors.grey[30],
+                                    thickness: 2,
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
                         ],
                       ),
                     ),
                   ),
                   Expanded(
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      slivers: [
-                        if (state is InitialHomePageState)
-                          const SliverToBoxAdapter()
-                        else if (state is GotPaintingsErrorState)
-                          SliverToBoxAdapter(
-                            child: Column(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      child: state is InitialHomeState
+                          ? const SpinKitRipple(
+                              color: AppColors.brightSun,
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(context.l10n.unknownErrorMessage),
-                                const SizedBox(height: 24),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    BlocProvider.of<HomePageBloc>(context).add(GetPaintings());
-                                  },
-                                  child: Text(context.l10n.peaseTryAgain),
-                                )
+                                if (state is GotPaintingsErrorState)
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(context.l10n.unknownErrorMessage),
+                                      const SizedBox(height: 24),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          BlocProvider.of<HomeBloc>(context).add(GetPaintings());
+                                        },
+                                        child: Text(context.l10n.peaseTryAgain),
+                                      )
+                                    ],
+                                  )
+                                else if (state is GotPaintings || state is PaginationErrorState)
+                                  Expanded(
+                                    child: LayoutBuilder(
+                                        builder: (context, constraints) => MasonryGridView.count(
+                                              crossAxisCount: _getGridCrossAxisCount(constraints: constraints),
+                                              mainAxisSpacing: 12,
+                                              crossAxisSpacing: 12,
+                                              itemCount: state.paintings.length,
+                                              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
+                                              controller: _controller,
+                                              itemBuilder: (context, index) => HomeImageItem(
+                                                paintingEntity: state.paintings[index],
+                                              ),
+                                            )),
+                                  ),
                               ],
                             ),
-                          )
-                        else if (state is GotPaintings || state is PaginationErrorState)
-                          SliverPadding(
-                            padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
-                            sliver: SliverToBoxAdapter(
-                              child: StaggeredGrid.count(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 16,
-                                children: state.paintings
-                                    .map(
-                                      (paintingEntity) => HomeImageItem(
-                                        paintingEntity: paintingEntity,
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                      ],
                     ),
                   ),
                 ],
@@ -171,4 +201,14 @@ class HomePage extends StatelessWidget {
           transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
         ),
       );
+
+  int _getGridCrossAxisCount({required BoxConstraints constraints}) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth <= PuzzleBreakpoints.extraSmall || screenWidth <= PuzzleBreakpoints.small) {
+      return 2;
+    } else if (screenWidth <= PuzzleBreakpoints.medium) {
+      return 3;
+    }
+    return 5;
+  }
 }

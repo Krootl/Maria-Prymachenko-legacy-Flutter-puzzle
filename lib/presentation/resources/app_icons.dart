@@ -22,4 +22,26 @@ class AppIcons {
   static const darkCancelGetInfo = 'assets/icons/dark_cancel_get_info.svg';
   static const sun = 'assets/icons/sun.webp';
   static const bull = 'assets/icons/bull.webp';
+
+  static const precacheIcons = [
+    darkGetInfo,
+    darkGoHome,
+    darkShuffle,
+    darkTurnOnArtMode,
+    darkTurnOnSimpleMode,
+    lightGetInfo,
+    lightGoHome,
+    lightShuffle,
+    lightTurnOnArtMode,
+    turnOnDarkTheme,
+    lightTurnOnSimpleMode,
+    turnOnLightTheme,
+    lightTimer,
+    darkTimer,
+    darkExtremeMode,
+    lightExtremeMode,
+    activeExtremeMode,
+    lightCancelGetInfo,
+    darkCancelGetInfo,
+  ];
 }

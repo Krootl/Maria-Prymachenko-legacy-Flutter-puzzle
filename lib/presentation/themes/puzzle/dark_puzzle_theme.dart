@@ -83,7 +83,7 @@ class DarkPuzzleTheme extends PuzzleTheme {
   Color get activeExtremeModeColor => AppColors.white;
 
   @override
-  Color get loaderColor => AppColors.malibu;
+  Color get loaderColor => AppColors.brightSun;
 
   @override
   Color get learnMoreButtonColor => AppColors.tuna;

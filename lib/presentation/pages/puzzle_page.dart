@@ -10,7 +10,6 @@ import 'package:very_good_slide_puzzle/presentation/blocs/theme_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/blocs/timer_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/enums/puzzle_lifecycle.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_colors.dart';
-import 'package:very_good_slide_puzzle/presentation/resources/app_icons.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_text_styles.dart';
 import 'package:very_good_slide_puzzle/presentation/themes/puzzle/theme.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/congratulations_dialog.dart';
@@ -19,7 +18,7 @@ import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/menu.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/number_of_moves.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/puzzle_action_button.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/puzzle_board.dart';
-import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/timer.dart';
+import 'package:very_good_slide_puzzle/presentation/widgets/puzzle/game_timer.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/response_layout_builder.dart';
 
 class PuzzlePage extends StatefulWidget {
@@ -118,9 +117,8 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
                         builder: (context, state) => AnimatedSwitcher(
                           duration: const Duration(milliseconds: 500),
                           child: state.images.isEmpty
-                              ? SpinKitCircle(
+                              ? SpinKitRipple(
                                   color: themeState.currentPuzzleTheme.loaderColor,
-                                  size: 36,
                                 )
                               : Column(
                                   children: [
@@ -147,6 +145,7 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
                                       children: [
                                         NumberOfMoves(
                                           numberOfMoves: state.numberOfMoves,
+                                          title: context.l10n.numberOfPuzzleMoves,
                                         ),
                                         Container(
                                           height: 20,
@@ -161,6 +160,7 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
                                           numberOfMoves: state.puzzleLifecycle == PuzzleLifecycle.onRunning
                                               ? state.numberOfTilesLeft
                                               : state.numberOfCorrectTiles,
+                                          title: context.l10n.numberOfPuzzleTilesLeft,
                                         ),
                                       ],
                                     ),
@@ -178,7 +178,7 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
                                                       medium: (context, child) => const SizedBox(height: 16),
                                                       large: (context, child) => const SizedBox(height: 16),
                                                     ),
-                                                    Timer(secondsElapsed: state.secondsElapsed),
+                                                    GameTimer(secondsElapsed: state.secondsElapsed),
                                                     ResponsiveLayoutBuilder(
                                                       extraSmall: (context, child) => const SizedBox(height: 5),
                                                       small: (context, child) => const SizedBox(height: 40),
@@ -217,11 +217,9 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
                                     ),
                                     const Spacer(),
                                     const SizedBox(height: 10),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 37),
-                                      child: Menu(
-                                        onBack: () => _hideGetInfoDialog(context: context),
-                                      ),
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 37),
+                                      child: Menu(),
                                     ),
                                     ResponsiveLayoutBuilder(
                                       extraSmall: (context, child) => const SizedBox(height: 10),
@@ -244,7 +242,6 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
 
   void _showGetInfoDialog({required BuildContext context}) {
     final menuBloc = BlocProvider.of<MenuBloc>(context);
-
     final themeBloc = BlocProvider.of<ThemeBloc>(context);
     final overlayState = Overlay.of(context);
     _overlayEntry = OverlayEntry(

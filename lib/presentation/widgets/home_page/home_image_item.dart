@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:octo_image/octo_image.dart';
 import 'package:very_good_slide_puzzle/domain/entities/painting_entity.dart';
 import 'package:very_good_slide_puzzle/presentation/pages/puzzle_page.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_colors.dart';
@@ -27,39 +26,30 @@ class HomeImageItem extends StatelessWidget {
                   elevation: isHovered ? 16 : 0,
                   child: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        OctoImage(
-                          image: CachedNetworkImageProvider(
-                            _paintingEntity.image,
-                            cacheKey: _paintingEntity.id,
+                    child: CachedNetworkImage(
+                      imageUrl: _paintingEntity.image,
+                      cacheKey: _paintingEntity.id,
+                      placeholderFadeInDuration: const Duration(milliseconds: 300),
+                      imageBuilder: (context, imageProvider) => Column(
+                        children: [
+                          Image(image: imageProvider),
+                          const SizedBox(height: 10),
+                          Text(
+                            _paintingEntity.title,
+                            style: AppTextStyles.subtitle1,
+                            textAlign: TextAlign.center,
                           ),
-                          fit: BoxFit.cover,
-                          placeholderFadeInDuration: const Duration(milliseconds: 300),
-                          placeholderBuilder: (context) => AspectRatio(
-                            aspectRatio: 1.6,
-                            child: Container(
-                              color: AppColors.athensGray,
+                          const SizedBox(height: 10),
+                          Text(
+                            _paintingEntity.completitionYear.toString(),
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.body1.copyWith(
+                              color: AppColors.montage,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          _paintingEntity.title,
-                          style: AppTextStyles.subtitle1,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          _paintingEntity.completitionYear.toString(),
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.body1.copyWith(
-                            color: AppColors.montage,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -67,41 +57,37 @@ class HomeImageItem extends StatelessWidget {
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  OctoImage(
-                    image: CachedNetworkImageProvider(
-                      _paintingEntity.image,
-                      cacheKey: _paintingEntity.id,
-                    ),
-                    fit: BoxFit.cover,
+                  CachedNetworkImage(
+                    imageUrl: _paintingEntity.image,
                     placeholderFadeInDuration: const Duration(milliseconds: 300),
-                    placeholderBuilder: (context) => AspectRatio(
-                      aspectRatio: 1.6,
-                      child: Container(
-                        color: AppColors.athensGray,
-                      ),
+                    cacheKey: _paintingEntity.id,
+                    imageBuilder: (context, imageProvider) => Column(
+                      children: [
+                        Image(image: imageProvider),
+                        const SizedBox(height: 5),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _paintingEntity.title,
+                            style: AppTextStyles.subtitle1,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _paintingEntity.completitionYear.toString(),
+                            textAlign: TextAlign.left,
+                            style: AppTextStyles.body1.copyWith(
+                              color: AppColors.montage,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _paintingEntity.title,
-                      style: AppTextStyles.subtitle1,
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _paintingEntity.completitionYear.toString(),
-                      textAlign: TextAlign.left,
-                      style: AppTextStyles.body1.copyWith(
-                        color: AppColors.montage,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                 ],
               ),
       );

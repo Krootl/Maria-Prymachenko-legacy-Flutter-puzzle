@@ -18,124 +18,151 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  late final _scrollController = ScrollController(initialScrollOffset: -MediaQuery.of(context).size.height);
+  final _appBarElevated = ValueNotifier(false);
+  final _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    _controller.addListener(() {
+      _appBarElevated.value = _controller.position.pixels != _controller.position.minScrollExtent;
+    });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.brightSun,
         body: Padding(
-          padding: const EdgeInsets.only(top: 60),
+          padding: const EdgeInsets.only(
+            top: 60,
+            bottom: 10,
+            left: 10,
+            right: 10,
+          ),
           child: SafeArea(
             bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.white,
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 12),
-                    _buildCancelButton(context: context),
-                    Image.asset(
-                      AppIcons.sun,
-                      width: 64,
-                    ),
-                    const SizedBox(height: 28),
-                    Text(
-                      context.l10n.mariaPrymachenko,
-                      style: AppTextStyles.headline5.copyWith(fontSize: 22),
-                    ),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                          style: AppTextStyles.subtitle2.copyWith(
-                                            fontSize: 16,
-                                            color: AppColors.blackPearl,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: context.l10n.mariaPrymachenko,
-                                              style: AppTextStyles.subtitle1.copyWith(fontSize: 16),
-                                            ),
-                                            TextSpan(
-                                              text: context.l10n.prymachenkoBiographyFirstPart,
-                                            ),
-                                            TextSpan(
-                                              text: context.l10n.prymachenkoBiographySecondPart,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 32),
-                                      Image.asset(
-                                        AppIcons.bull,
-                                        height: 179,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      const SizedBox(height: 32),
-                                      RichText(
-                                        text: TextSpan(
-                                          style: AppTextStyles.subtitle2.copyWith(
-                                            fontSize: 16,
-                                            color: AppColors.blackPearl,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: context.l10n.loosOfWork,
-                                              style: AppTextStyles.subtitle1.copyWith(fontSize: 16),
-                                            ),
-                                            TextSpan(
-                                              text: context.l10n.prymachenkoBiographyThirdPart,
-                                            ),
-                                            TextSpan(
-                                              text: context.l10n.war,
-                                              style: AppTextStyles.subtitle1.copyWith(
-                                                fontSize: 16,
-                                                color: AppColors.mariner,
-                                              ),
-                                              recognizer: TapGestureRecognizer()
-                                                ..onTap = () {
-                                                  launch(
-                                                      'https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine');
-                                                },
-                                            ),
-                                            TextSpan(
-                                              text: context.l10n.prymachenkoBiographyFourthPart,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: AppColors.white,
+              ),
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      const SizedBox(height: 22),
+                      Image.asset(
+                        AppIcons.sun,
+                        width: 64,
                       ),
+                      const SizedBox(height: 28),
+                      Text(
+                        context.l10n.mariaPrymachenko,
+                        style: AppTextStyles.headline5.copyWith(fontSize: 22),
+                      ),
+                      const SizedBox(height: 24),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _appBarElevated,
+                        builder: (context, showDivider, _) => showDivider
+                            ? Divider(
+                                height: 0,
+                                color: Colors.grey[30],
+                                thickness: 2,
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      Expanded(
+                        child: CustomScrollView(
+                          controller: _controller,
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: AppTextStyles.subtitle2.copyWith(
+                                              fontSize: 16,
+                                              color: AppColors.blackPearl,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: context.l10n.mariaPrymachenko,
+                                                style: AppTextStyles.subtitle1.copyWith(fontSize: 16),
+                                              ),
+                                              TextSpan(
+                                                text: context.l10n.prymachenkoBiographyFirstPart,
+                                              ),
+                                              TextSpan(
+                                                text: context.l10n.prymachenkoBiographySecondPart,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 32),
+                                        Image.asset(
+                                          AppIcons.bull,
+                                          height: 179,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        const SizedBox(height: 32),
+                                        RichText(
+                                          text: TextSpan(
+                                            style: AppTextStyles.subtitle2.copyWith(
+                                              fontSize: 16,
+                                              color: AppColors.blackPearl,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: context.l10n.loosOfWork,
+                                                style: AppTextStyles.subtitle1.copyWith(fontSize: 16),
+                                              ),
+                                              TextSpan(
+                                                text: context.l10n.prymachenkoBiographyThirdPart,
+                                              ),
+                                              TextSpan(
+                                                text: context.l10n.war,
+                                                style: AppTextStyles.subtitle1.copyWith(
+                                                  fontSize: 16,
+                                                  color: AppColors.mariner,
+                                                ),
+                                                recognizer: TapGestureRecognizer()
+                                                  ..onTap = () {
+                                                    launch(
+                                                        'https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine');
+                                                  },
+                                              ),
+                                              TextSpan(
+                                                text: context.l10n.prymachenkoBiographyFourthPart,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 50),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: _buildCancelButton(context: context),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

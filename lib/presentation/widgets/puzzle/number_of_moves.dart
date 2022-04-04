@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:very_good_slide_puzzle/l10n/l10n.dart';
 import 'package:very_good_slide_puzzle/presentation/blocs/theme_bloc/bloc.dart';
 import 'package:very_good_slide_puzzle/presentation/resources/app_text_styles.dart';
 
@@ -9,10 +7,13 @@ class NumberOfMoves extends StatelessWidget {
   const NumberOfMoves({
     Key? key,
     required int numberOfMoves,
+    required String title,
   })  : _numberOfMoves = numberOfMoves,
+        _title = title,
         super(key: key);
 
   final int _numberOfMoves;
+  final String _title;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class NumberOfMoves extends StatelessWidget {
               ),
             ),
             TextSpan(
-              text: context.l10n.numberOfPuzzleMoves,
+              text: _title,
               style: AppTextStyles.subtitle1.copyWith(
                 color: theme.movesTitleColor,
               ),

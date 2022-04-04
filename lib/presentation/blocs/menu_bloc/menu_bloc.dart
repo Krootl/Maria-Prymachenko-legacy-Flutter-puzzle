@@ -14,10 +14,12 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
   void _onTurnOnArtMode(TurnOnArtMode event, Emitter<MenuState> emit) {
     emit(const TurnedOnArtMode());
+    emit(const TurnedOnNeutralMode());
   }
 
   void _onTurnOnSimpleMode(TurnOnSimpleMode event, Emitter<MenuState> emit) {
     emit(const TurnedOnSimpleMode());
+    emit(const TurnedOnNeutralMode(isDisabled: true));
   }
 
   void _onTurnOnDarkTheme(TurnOnDarkTheme event, Emitter<MenuState> emit) {
@@ -34,9 +36,11 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
   void _onTurnOnExtremeMode(TurnOnExtremeMode event, Emitter<MenuState> emit) {
     emit(const TurnedOnExtremeMode());
+    emit(const TurnedOnArtMode(isDisabled: true));
   }
 
   void _onTurnOnNeutralMode(TurnOnNeutralMode event, Emitter<MenuState> emit) {
     emit(const TurnedOnNeutralMode());
+    emit(const TurnedOnArtMode());
   }
 }

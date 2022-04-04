@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:very_good_slide_puzzle/presentation/themes/puzzle/theme.dart';
 
 class ThemeState {

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -134,16 +135,18 @@ class _CongratulationsDialogState extends State<CongratulationsDialog> with Sing
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildActionButton(
-                      context: context,
-                      title: context.l10n.share,
-                      titleColor: theme.shareButtonTitleColor,
-                      backgroundColor: theme.shareButtonColor,
-                      onPressed: () {
-                        _shareImage(context: context);
-                      },
-                    ),
-                    const SizedBox(width: 16),
+                    if (!kIsWeb) ...[
+                      _buildActionButton(
+                        context: context,
+                        title: context.l10n.share,
+                        titleColor: theme.shareButtonTitleColor,
+                        backgroundColor: theme.shareButtonColor,
+                        onPressed: () {
+                          _shareImage(context: context);
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                    ],
                     _buildActionButton(
                       context: context,
                       title: context.l10n.newGame,
@@ -179,8 +182,6 @@ class _CongratulationsDialogState extends State<CongratulationsDialog> with Sing
           constraints: const BoxConstraints(),
           splashRadius: 30,
           onPressed: () {
-            _controller.dispose();
-            _floating.remove();
             Navigator.pop<void>(context);
           },
         ),
@@ -194,21 +195,24 @@ class _CongratulationsDialogState extends State<CongratulationsDialog> with Sing
     required VoidCallback onPressed,
   }) =>
       Expanded(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: backgroundColor,
-            elevation: 0,
-            padding: const EdgeInsets.symmetric(vertical: 9),
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          height: 42,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: backgroundColor,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 9),
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          ),
-          onPressed: onPressed,
-          child: Text(
-            title,
-            style: AppTextStyles.body1.copyWith(
-              color: titleColor,
+            onPressed: onPressed,
+            child: Text(
+              title,
+              style: AppTextStyles.body1.copyWith(
+                color: titleColor,
+              ),
             ),
           ),
         ),
@@ -254,4 +258,11 @@ class _CongratulationsDialogState extends State<CongratulationsDialog> with Sing
   Future<void> _shareImage({required BuildContext context}) => Share.shareFiles([widget._imagePath],
       text:
           'I just won in Maria Prymachenko legacy puzzle! My result is ${widget._movesNumber} moves and ${widget._time} seconds for “title” painting.');
+
+  @override
+  void dispose() {
+    _floating.remove();
+    _controller.dispose();
+    super.dispose();
+  }
 }

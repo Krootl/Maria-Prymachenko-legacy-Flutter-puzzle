@@ -8,7 +8,7 @@ import 'package:very_good_slide_puzzle/presentation/widgets/response_layout_buil
 
 abstract class BoardSize {
   static double extraSmall = 250;
-  static double small = 350;
+  static double small = 340;
   static double medium = 424;
   static double large = 472;
 }

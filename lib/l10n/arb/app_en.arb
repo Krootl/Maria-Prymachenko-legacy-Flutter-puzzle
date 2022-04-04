@@ -2,6 +2,7 @@
     "@@locale": "en",
     "puzzleTitle":"Puzzle Challenge",
     "numberOfPuzzleMoves": "Moves",
+    "numberOfPuzzleTilesLeft": "Tiles",
     "startPuzzle":"START",
     "shufflePuzzle":"Shuffle",
     "restartPuzzle":"RESTART",
@@ -21,5 +22,13 @@
     "artPainter":" – Ukrainian naïve art painter",
     "unknownErrorMessage":"Something was wrong",
     "peaseTryAgain":"Please try again",
-    "aboutButtonTitle":"Who is Maria Prymachenko"
+    "aboutButtonTitle":"Who is Maria Prymachenko",
+    "noImageMode":"No image mode",
+    "imageMode":"Image mode",
+    "darkMode":"Dark mode",
+    "lightMode":"Light mode",
+    "paintingInfo":"Painting info",
+    "extremeMode":"Extreme mode",
+    "simpleMode":"Simple mode",
+    "home":"Home"
 }

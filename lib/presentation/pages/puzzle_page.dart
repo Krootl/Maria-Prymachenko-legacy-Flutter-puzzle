@@ -35,7 +35,8 @@ class PuzzlePage extends StatefulWidget {
 }
 
 class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateMixin {
-  late final _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+  late final _animationController =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
   late final _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
   OverlayEntry? _overlayEntry;
   int _time = 0;
@@ -44,7 +45,8 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) => MultiBlocProvider(
         providers: [
           BlocProvider<PuzzleBloc>(
-            create: (context) => PuzzleBloc(4)..add(CreatePuzzle(imagePath: widget._paintingEntity.image)),
+            create: (context) =>
+                PuzzleBloc(4)..add(CreatePuzzle(imagePath: widget._paintingEntity.image)),
             lazy: false,
           ),
           BlocProvider<MenuBloc>(
@@ -107,128 +109,144 @@ class _PuzzlePageState extends State<PuzzlePage> with SingleTickerProviderStateM
                   ? SystemUiOverlayStyle.light
                   : SystemUiOverlayStyle.dark;
               SystemChrome.setSystemUIOverlayStyle(systemStyle);
-              return Material(
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  color: themeState.currentPuzzleTheme.backgroundColor,
-                  child: SafeArea(
-                    child: Center(
-                      child: BlocBuilder<PuzzleBloc, PuzzleState>(
-                        builder: (context, state) => AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          child: state.images.isEmpty
-                              ? SpinKitRipple(
-                                  color: themeState.currentPuzzleTheme.loaderColor,
-                                )
-                              : Column(
-                                  children: [
-                                    ResponsiveLayoutBuilder(
-                                      extraSmall: (context, child) => const SizedBox(height: 10),
-                                      small: (context, child) => const SizedBox(height: 40),
-                                      medium: (context, child) => const SizedBox(height: 40),
-                                      large: (context, child) => const SizedBox(height: 40),
-                                    ),
-                                    Text(
-                                      context.l10n.puzzleTitle,
-                                      style: AppTextStyles.headline4.copyWith(
-                                        color: themeState.currentPuzzleTheme.titleColor,
+              return SingleChildScrollView(
+                child: Material(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    color: themeState.currentPuzzleTheme.backgroundColor,
+                    child: SafeArea(
+                      child: Center(
+                        child: BlocBuilder<PuzzleBloc, PuzzleState>(
+                          builder: (context, state) => AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            child: state.images.isEmpty
+                                ? SpinKitRipple(
+                                    color: themeState.currentPuzzleTheme.loaderColor,
+                                  )
+                                : Column(
+                                    children: [
+                                      ResponsiveLayoutBuilder(
+                                        extraSmall: (context, child) => const SizedBox(height: 10),
+                                        small: (context, child) => const SizedBox(height: 40),
+                                        medium: (context, child) => const SizedBox(height: 40),
+                                        large: (context, child) => const SizedBox(height: 40),
                                       ),
-                                    ),
-                                    ResponsiveLayoutBuilder(
-                                      extraSmall: (context, child) => const SizedBox(height: 10),
-                                      small: (context, child) => const SizedBox(height: 16),
-                                      medium: (context, child) => const SizedBox(height: 16),
-                                      large: (context, child) => const SizedBox(height: 16),
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        NumberOfMoves(
-                                          numberOfMoves: state.numberOfMoves,
-                                          title: context.l10n.numberOfPuzzleMoves,
+                                      Text(
+                                        context.l10n.puzzleTitle,
+                                        style: AppTextStyles.headline4.copyWith(
+                                          color: themeState.currentPuzzleTheme.titleColor,
                                         ),
-                                        Container(
-                                          height: 20,
-                                          width: 1,
-                                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.mariner,
-                                            borderRadius: BorderRadius.circular(1),
+                                      ),
+                                      ResponsiveLayoutBuilder(
+                                        extraSmall: (context, child) => const SizedBox(height: 10),
+                                        small: (context, child) => const SizedBox(height: 16),
+                                        medium: (context, child) => const SizedBox(height: 16),
+                                        large: (context, child) => const SizedBox(height: 16),
+                                      ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          NumberOfMoves(
+                                            numberOfMoves: state.numberOfMoves,
+                                            title: context.l10n.numberOfPuzzleMoves,
                                           ),
-                                        ),
-                                        NumberOfMoves(
-                                          numberOfMoves: state.puzzleLifecycle == PuzzleLifecycle.onRunning
-                                              ? state.numberOfTilesLeft
-                                              : state.numberOfCorrectTiles,
-                                          title: context.l10n.numberOfPuzzleTilesLeft,
-                                        ),
-                                      ],
-                                    ),
-                                    AnimatedSwitcher(
-                                      duration: const Duration(milliseconds: 300),
-                                      child: state.puzzleLifecycle != PuzzleLifecycle.onCreate
-                                          ? BlocBuilder<TimerBloc, TimerState>(
-                                              builder: (context, state) {
-                                                _time = state.secondsElapsed;
-                                                return Column(
-                                                  children: [
-                                                    ResponsiveLayoutBuilder(
-                                                      extraSmall: (context, child) => const SizedBox(height: 5),
-                                                      small: (context, child) => const SizedBox(height: 16),
-                                                      medium: (context, child) => const SizedBox(height: 16),
-                                                      large: (context, child) => const SizedBox(height: 16),
-                                                    ),
-                                                    GameTimer(secondsElapsed: state.secondsElapsed),
-                                                    ResponsiveLayoutBuilder(
-                                                      extraSmall: (context, child) => const SizedBox(height: 5),
-                                                      small: (context, child) => const SizedBox(height: 40),
-                                                      medium: (context, child) => const SizedBox(height: 40),
-                                                      large: (context, child) => const SizedBox(height: 40),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            )
-                                          : ResponsiveLayoutBuilder(
-                                              extraSmall: (context, child) => const SizedBox(height: 10),
-                                              small: (context, child) => const SizedBox(height: 83),
-                                              medium: (context, child) => const SizedBox(height: 83),
-                                              large: (context, child) => const SizedBox(height: 83),
+                                          Container(
+                                            height: 20,
+                                            width: 1,
+                                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.mariner,
+                                              borderRadius: BorderRadius.circular(1),
                                             ),
-                                    ),
-                                    PuzzleBoard(
-                                      tiles: state.puzzle.tiles,
-                                      puzzleState: state,
-                                      hasArt: state.hasArtPuzzle,
-                                      showTileNumber: state.showTileNumber,
-                                    ),
-                                    ResponsiveLayoutBuilder(
-                                      extraSmall: (context, child) => const SizedBox(
-                                        height: 10,
+                                          ),
+                                          NumberOfMoves(
+                                            numberOfMoves:
+                                                state.puzzleLifecycle == PuzzleLifecycle.onRunning
+                                                    ? state.numberOfTilesLeft
+                                                    : state.numberOfCorrectTiles,
+                                            title: context.l10n.numberOfPuzzleTilesLeft,
+                                          ),
+                                        ],
                                       ),
-                                      small: (context, child) => const SizedBox(height: 40),
-                                      medium: (context, child) => const SizedBox(height: 40),
-                                      large: (context, child) => const SizedBox(height: 40),
-                                    ),
-                                    SizedBox(
-                                      width: 126,
-                                      height: 42,
-                                      child: PuzzleActionButton(puzzleLifecycle: state.puzzleLifecycle),
-                                    ),
-                                    const Spacer(),
-                                    const SizedBox(height: 10),
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 37),
-                                      child: Menu(),
-                                    ),
-                                    ResponsiveLayoutBuilder(
-                                      extraSmall: (context, child) => const SizedBox(height: 10),
-                                      small: (context, child) => const SizedBox(height: 30),
-                                      medium: (context, child) => const SizedBox(height: 60),
-                                      large: (context, child) => const SizedBox(height: 60),
-                                    ),
-                                  ],
-                                ),
+                                      AnimatedSwitcher(
+                                        duration: const Duration(milliseconds: 300),
+                                        child: state.puzzleLifecycle != PuzzleLifecycle.onCreate
+                                            ? BlocBuilder<TimerBloc, TimerState>(
+                                                builder: (context, state) {
+                                                  _time = state.secondsElapsed;
+                                                  return Column(
+                                                    children: [
+                                                      ResponsiveLayoutBuilder(
+                                                        extraSmall: (context, child) =>
+                                                            const SizedBox(height: 5),
+                                                        small: (context, child) =>
+                                                            const SizedBox(height: 16),
+                                                        medium: (context, child) =>
+                                                            const SizedBox(height: 16),
+                                                        large: (context, child) =>
+                                                            const SizedBox(height: 16),
+                                                      ),
+                                                      GameTimer(
+                                                          secondsElapsed: state.secondsElapsed),
+                                                      ResponsiveLayoutBuilder(
+                                                        extraSmall: (context, child) =>
+                                                            const SizedBox(height: 5),
+                                                        small: (context, child) =>
+                                                            const SizedBox(height: 40),
+                                                        medium: (context, child) =>
+                                                            const SizedBox(height: 40),
+                                                        large: (context, child) =>
+                                                            const SizedBox(height: 40),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              )
+                                            : ResponsiveLayoutBuilder(
+                                                extraSmall: (context, child) =>
+                                                    const SizedBox(height: 10),
+                                                small: (context, child) =>
+                                                    const SizedBox(height: 83),
+                                                medium: (context, child) =>
+                                                    const SizedBox(height: 83),
+                                                large: (context, child) =>
+                                                    const SizedBox(height: 83),
+                                              ),
+                                      ),
+                                      PuzzleBoard(
+                                        tiles: state.puzzle.tiles,
+                                        puzzleState: state,
+                                        hasArt: state.hasArtPuzzle,
+                                        showTileNumber: state.showTileNumber,
+                                      ),
+                                      ResponsiveLayoutBuilder(
+                                        extraSmall: (context, child) => const SizedBox(
+                                          height: 10,
+                                        ),
+                                        small: (context, child) => const SizedBox(height: 40),
+                                        medium: (context, child) => const SizedBox(height: 40),
+                                        large: (context, child) => const SizedBox(height: 40),
+                                      ),
+                                      SizedBox(
+                                        width: 126,
+                                        height: 42,
+                                        child: PuzzleActionButton(
+                                            puzzleLifecycle: state.puzzleLifecycle),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 37),
+                                        child: Menu(),
+                                      ),
+                                      ResponsiveLayoutBuilder(
+                                        extraSmall: (context, child) => const SizedBox(height: 10),
+                                        small: (context, child) => const SizedBox(height: 30),
+                                        medium: (context, child) => const SizedBox(height: 60),
+                                        large: (context, child) => const SizedBox(height: 60),
+                                      ),
+                                    ],
+                                  ),
+                          ),
                         ),
                       ),
                     ),
